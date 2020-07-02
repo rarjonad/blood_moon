@@ -1,0 +1,6 @@
+ID,NAME,HP_Dice,HP_Quant,Armor,STR,DEX,CON,INT,WIS,CHA,WPN_DICE,WPN_DMG,MOD,Prof,Healer,Heal_Dice,Heal_Quant,Caster,max_debuff,Poison,EXP
+0,Jefe Goblin,6,6,5,10,14,10,10,8,10,2,6,DEX,2,0,0,0,0,0,0,250
+1,Ghoul,5,8,0,13,15,12,7,10,6,2,6,DEX,2,0,0,0,0,0,1,250
+2,Duergar,5,8,6,14,11,14,11,10,9,2,8,STR,2,0,0,0,1,2,0,250
+3,Armadura Animada,6,8,8,14,11,13,3,4,1,2,6,STR,2,0,0,0,0,0,0,250
+4,Cultista,6,8,2,11,14,12,10,13,14,1,6,DEX,2,1,2,8,1,2,1,250
