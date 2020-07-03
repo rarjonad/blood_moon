@@ -1,0 +1,56 @@
+# Menu de curación específica #
+function PL_UPGRADES_HEAL {
+  PL_UPGRADE_CHOICE=""
+  PL_UPGRADE_MENU_HEAL=1
+  if [ $PL_HP -eq $PL_HP_MAX ]
+    then
+      PL_UPGRADE_MENU_HEAL=0
+      echo "Ya tienes la vida la máximo"
+      read -p "         Pulsa Enter             "
+  fi
+  while [ $PL_UPGRADE_MENU_HEAL -eq 1 ]; do
+    PL_UPGRADES_COST_UPDATE
+    clear
+    echo "Esencia disponible: $PL_EXP | Vida actual: $PL_HP/$PL_HP_MAX"
+    echo "Esta opción te permite curarte una cantidad de vida específica"
+    echo ""
+    echo " 1) Curarse cantidad específica (El coste de 1 punto de HP son $PL_UPGRADE_COST_HP_SPECIFIC_DISCOUNT de esencia)"
+    echo " 0) Volver al menú anterior"
+    read -p "Elige una opción: " PL_UPGRADE_MENU_HEAL_OPTION
+    case $PL_UPGRADE_MENU_HEAL_OPTION in
+      1)
+        read -p "¿Cuanta vida deseas curarte? " PL_UPGRADES_HEAL_QUANTITY
+        if [[ "$PL_UPGRADES_HEAL_QUANTITY" = "" ]]
+          then
+            echo "Introduce un número"
+            read -p "         Pulsa Enter             "
+          else
+            PL_UPGRADES_HEAL_COST=$(($PL_UPGRADES_HEAL_QUANTITY * $PL_UPGRADE_COST_HP_SPECIFIC_DISCOUNT))
+            echo "$PL_UPGRADES_HEAL_QUANTITY costarán $PL_UPGRADES_HEAL_COST"
+            if [ $PL_EXP -lt $PL_UPGRADES_HEAL_COST ]
+              then
+                echo "No tienes suficiente esencia"
+                read -p "         Pulsa Enter             "
+              else
+                PL_EXP=$(($PL_EXP - $PL_UPGRADES_HEAL_COST ))
+                PL_HP=$(($PL_HP + $PL_UPGRADES_HEAL_QUANTITY))
+                PL_HP_OVERFLOW_CHECK
+                nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_heal.wav >/dev/null 2>&1 &
+                echo "Te curas $PL_UPGRADES_HEAL_QUANTITY puntos de vida!"
+                PL_UPGRADE_MENU_HEAL=0
+                read -p "         Pulsa Enter             "
+            fi
+        fi
+
+        ;;
+      0)
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+        PL_UPGRADE_MENU_HEAL=0
+        ;;
+      *)
+        echo "Introduce una opción correcta"
+        read -p "         Pulsa Enter             "
+        ;;
+    esac
+  done
+}

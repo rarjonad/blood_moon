@@ -1,0 +1,30 @@
+# Actualiza modificadores, hit bonus y DMG Mod.
+function NPC_C_STAT_REFRESH {
+NPC_C_STR_MOD=$((($NPC_C_STR - 10) / 2))
+NPC_C_DEX_MOD=$((($NPC_C_DEX - 10) / 2))
+NPC_C_CON_MOD=$((($NPC_C_CON - 10) / 2))
+NPC_C_INT_MOD=$((($NPC_C_INT - 10) / 2))
+NPC_C_WIS_MOD=$((($NPC_C_WIS - 10) / 2))
+NPC_C_CHA_MOD=$((($NPC_C_CHA - 10) / 2))
+NPC_C_AC=$(($NPC_C_BASE_AC + $NPC_C_DEX_MOD + $NPC_C_ARMOR))
+if [ $NPC_CASTER -eq 1 ]
+  then
+    NPC_C_SPELL_DC=$(( 8 + $NPC_PROF + $NPC_C_INT_MOD))
+fi
+if [ $NPC_MOD_STAT = "STR" ]
+  then
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo "El stat para modificar ataques es Fuerza: $NPC_MOD_STAT"
+  fi
+    NPC_HIT_BONUS=$(($NPC_C_STR_MOD + $NPC_PROF))
+    NPC_DMG_BONUS=$NPC_C_STR_MOD
+  else
+    if [[ $VERBOSE = "v" ]]
+      then
+    echo "El stat para modificar ataques es Dexteridad: $NPC_MOD_STAT"
+    fi
+    NPC_HIT_BONUS=$(($NPC_C_DEX_MOD + $NPC_PROF))
+    NPC_DMG_BONUS=$NPC_C_DEX_MOD
+fi 
+}

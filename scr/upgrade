@@ -1,0 +1,192 @@
+# Encapsula el menu de mejoras #
+function PL_UPGRADES {
+  PL_UPGRADE_MENU=1
+  while [ $PL_UPGRADE_MENU -eq 1 ]; do
+    PL_UPGRADES_COST_UPDATE
+    PL_UPGRADE_CHOICE=""
+    clear
+    echo "Todas las mejoras cuestan esencia. Esencia disponible: $PL_EXP"
+    echo "Mejoras disponibles:"
+    echo ""
+    echo ""
+    echo -e " 1) Mejoras de Atributos   ║"
+    echo -e " 2) Mejoras de Arma\t   ║"
+    echo -e " 3) Mejorar Armadura +1\t   ║ Coste: $PL_UPGRADE_COST_AC_DISCOUNT\t║ (Valor actual: $PL_ARMOR)"
+    echo -e " 4) Curarse al 100%\t   ║ Coste: $PL_UPGRADE_COST_HEAL_100_DISCOUNT\t║ (Vida actual: $PL_HP/$PL_HP_MAX)"
+    echo -e " 5) Curar específico\t   ║ Coste Varía║ (Vida actual: $PL_HP/$PL_HP_MAX)"
+    echo -e " 6) Mejorar vida máxima +3 ║ Coste: $PL_UPGRADE_COST_HP_MAX_DISCOUNT\t║ (Vida máxima actual: $PL_HP_MAX)"
+    if [ $PL_CLASS = "Mago" ]; then
+      echo -e " 7) Mejorar maná máximo +5 ║ Coste: $PL_UPGRADE_COST_MP_MAX_DISCOUNT\t║ (Valor actual: $PL_MANA_MAX)"
+    fi
+    echo ""
+    echo " 0) Finalizar Mejoras"
+    echo ""
+    echo "$PL_UPGRADE_MENU_ERROR"
+    PL_UPGRADE_MENU_ERROR=""
+    read -p "Elige una opción: " PL_UPGRADE_CHOICE
+    case $PL_UPGRADE_CHOICE in
+      1)
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_confirm.wav >/dev/null 2>&1 &
+        PL_UPGRADES_STATS
+        ;;
+      2)
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_confirm.wav >/dev/null 2>&1 &
+        PL_UPGRADES_WPN
+        ;;
+      3)
+        if [ $PL_EXP -ge $PL_UPGRADE_COST_AC_DISCOUNT ]
+          then
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+            PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_AC_DISCOUNT))
+            PL_ARMOR=$((PL_ARMOR + 1))
+            echo ""
+            echo "Tu armadura ha aumentado en +1. ($PL_ARMOR)"
+            echo ""
+            read -p "         Pulsa Enter             "
+          else
+            echo ""
+            echo "No tienes suficiente esencia"
+            read -p "         Pulsa Enter             "
+        fi
+        ;;
+      4)
+        if [ $PL_HP -lt $PL_HP_MAX ]
+          then
+            if [ $PL_EXP -ge $PL_UPGRADE_COST_HEAL_100_DISCOUNT ]
+              then
+                nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_heal.wav >/dev/null 2>&1 &
+                PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_HEAL_100_DISCOUNT))
+                PL_HP=$PL_HP_MAX
+                echo ""
+                echo "Tu vida ha aumentado al máximo. $PL_HP/$PL_HP_MAX"
+                echo ""
+                read -p "         Pulsa Enter             "
+              else
+                echo ""
+                echo "No tienes suficiente esencia"
+                read -p "         Pulsa Enter             "
+            fi
+          else
+            echo "Ya tienes la vida la máximo"
+            read -p "         Pulsa Enter             "
+        fi
+        ;;        
+      5)
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_confirm.wav >/dev/null 2>&1 &
+        PL_UPGRADES_HEAL  
+        ;;        
+      6)
+        if [ $PL_EXP -ge $PL_UPGRADE_COST_HP_MAX_DISCOUNT ]
+          then
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_max_hp.wav >/dev/null 2>&1 &
+            PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_HP_MAX_DISCOUNT))
+            PL_HP_MAX=$(($PL_HP_MAX + 3))
+            echo ""
+            echo "Tu vida máxima ha aumentado en 3. $PL_HP_MAX"
+            echo ""
+            read -p "         Pulsa Enter             "
+          else
+            echo ""
+            echo "No tienes suficiente esencia"
+            read -p "         Pulsa Enter             "
+        fi        
+        ;;
+      7)
+        if [ $PL_CLASS = "Mago" ]
+          then
+            if [ $PL_EXP -ge $PL_UPGRADE_COST_MP_MAX_DISCOUNT ]
+              then
+                nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+                PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_MP_MAX_DISCOUNT))
+                PL_MANA_MAX=$(($PL_MANA_MAX + 5))
+                echo ""
+                echo "Tu maná máximo ha aumentado en 5. $PL_MANA_MAX"
+                read -p "         Pulsa Enter             "
+              else
+                echo "No tienes suficiente esencia"
+                read -p "         Pulsa Enter             "
+            fi
+          else
+          PL_UPGRADE_MENU_ERROR="Introduce un número válido"
+        fi
+        ;;
+      0)
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+        PL_UPGRADE_MENU=0
+        ;;
+      *)
+        PL_UPGRADE_MENU_ERROR="Introduce un número válido"
+        ;;
+    esac
+   done
+}
+
+# Fija el precio inicial de las mejoras #
+function PL_UPGRADES_SET_COST {
+PL_UPGRADE_COST_ANY_STAT=200
+PL_UPGRADE_COST_WPN_DICE=350
+PL_UPGRADE_COST_WPN_QUANT=80
+PL_UPGRADE_COST_WPN_BONUS=150
+PL_UPGRADE_COST_AC=350
+#PL_UPGRADE_COST_HEAL_100=$((($PL_HP_MAX - $PL_HP) * 10))
+PL_UPGRADE_COST_HP_SPECIFIC=10
+PL_UPGRADE_COST_HP_MAX=200
+PL_UPGRADE_COST_MP_MAX=150
+}
+
+# Cálculo de costes para mejoras #
+function PL_UPGRADES_COST_UPDATE {
+PL_UPGRADE_COST_ANY_STAT_DISCOUNT=$(( $PL_UPGRADE_COST_ANY_STAT - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_ANY_STAT_DISCOUNT -lt $(($PL_UPGRADE_COST_ANY_STAT / 5)) ]
+  then
+    PL_UPGRADE_COST_ANY_STAT_DISCOUNT=$(($PL_UPGRADE_COST_ANY_STAT / 5))
+fi
+
+PL_UPGRADE_COST_WPN_DICE_DISCOUNT=$(( $PL_UPGRADE_COST_WPN_DICE - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_WPN_DICE_DISCOUNT -lt $(($PL_UPGRADE_COST_WPN_DICE / 5)) ]
+  then
+    PL_UPGRADE_COST_WPN_DICE_DISCOUNT=$(($PL_UPGRADE_COST_WPN_DICE / 5))
+fi
+
+PL_UPGRADE_COST_WPN_QUANT_DISCOUNT=$(( $PL_UPGRADE_COST_WPN_QUANT - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_WPN_QUANT_DISCOUNT -lt $(($PL_UPGRADE_COST_WPN_QUANT / 5)) ]
+  then
+    PL_UPGRADE_COST_WPN_QUANT_DISCOUNT=$(($PL_UPGRADE_COST_WPN_QUANT / 5))
+fi
+
+PL_UPGRADE_COST_WPN_BONUS_DISCOUNT=$(( $PL_UPGRADE_COST_WPN_BONUS - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_WPN_BONUS_DISCOUNT -lt $(($PL_UPGRADE_COST_WPN_BONUS / 5)) ]
+  then
+    PL_UPGRADE_COST_WPN_BONUS_DISCOUNT=$(($PL_UPGRADE_COST_WPN_BONUS / 5))
+fi
+
+PL_UPGRADE_COST_AC_DISCOUNT=$(( $PL_UPGRADE_COST_AC - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_AC_DISCOUNT -lt $(($PL_UPGRADE_COST_AC / 5)) ]
+  then
+    PL_UPGRADE_COST_AC_DISCOUNT=$(($PL_UPGRADE_COST_AC / 5))
+fi
+PL_UPGRADE_COST_HEAL_100=$((($PL_HP_MAX - $PL_HP) * 10))
+PL_UPGRADE_COST_HEAL_100_DISCOUNT=$(($PL_UPGRADE_COST_HEAL_100 - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_HEAL_100_DISCOUNT -lt $(($PL_UPGRADE_COST_HEAL_100 / 5)) ]
+  then
+    PL_UPGRADE_COST_HEAL_100_DISCOUNT=$(($PL_UPGRADE_COST_HEAL_100 / 5))
+fi
+PL_UPGRADE_COST_HP_SPECIFIC_DISCOUNT=$(( $PL_UPGRADE_COST_HP_SPECIFIC - ($PL_CHA_MOD * 2)))
+if [ $PL_UPGRADE_COST_HP_SPECIFIC_DISCOUNT -lt $(($PL_UPGRADE_COST_HP_SPECIFIC / 5)) ]
+  then
+    PL_UPGRADE_COST_HP_SPECIFIC_DISCOUNT=$(($PL_UPGRADE_COST_HP_SPECIFIC / 5))
+fi
+
+PL_UPGRADE_COST_HP_MAX_DISCOUNT=$(( $PL_UPGRADE_COST_HP_MAX - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_HP_MAX_DISCOUNT -lt $(($PL_UPGRADE_COST_HP_MAX / 5)) ]
+  then
+    PL_UPGRADE_COST_HP_MAX_DISCOUNT=$(($PL_UPGRADE_COST_HP_MAX / 5))
+fi
+
+PL_UPGRADE_COST_MP_MAX_DISCOUNT=$(( $PL_UPGRADE_COST_MP_MAX - ($PL_CHA_MOD * 35)))
+if [ $PL_UPGRADE_COST_MP_MAX_DISCOUNT -lt $(($PL_UPGRADE_COST_MP_MAX / 5)) ]
+  then
+    PL_UPGRADE_COST_MP_MAX_DISCOUNT=$(($PL_UPGRADE_COST_MP_MAX / 5))
+fi
+
+}

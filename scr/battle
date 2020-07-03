@@ -1,0 +1,174 @@
+function BATTLE {
+  COMBAT_END_FLAG=0
+  FLEE_FLAG=0
+  PL_C_STATUS="OK"
+  PL_C_DEBUFF_COUNT=0
+  PL_C_STAT_ASSIGN
+  PL_C_STAT_REFRESH
+  if [ $PL_CLASS = "Mago" ]
+    then
+      if [ $PL_MANA_CURRENT -lt $PL_MANA_MAX ]
+        then
+          PL_MANA_CURRENT=$(($PL_MANA_CURRENT + ($PL_MANA_MAX / 4)))
+            if [ $PL_MANA_CURRENT -gt $PL_MANA_MAX ]
+              then
+                PL_MANA_CURRENT=$PL_MANA_MAX
+            fi
+      fi
+  fi
+  TURN=1
+  NPC_FETCH
+  ### Determinar primer turno ###
+  PL_C_INI_DICE=$[RANDOM%20+1]
+  if [[ $VERBOSE = "v" ]]
+    then
+    echo -e "Resultado INI \e[1;92m$PL_NAME\e[0m: $PL_C_INI_DICE (Modificador por sumar $PL_INI_MOD)"
+  fi
+  PL_C_INI=$(($PL_C_INI_DICE + $PL_INI_MOD))
+  NPC_C_INI=$(($NPC_C_DEX_MOD + $[RANDOM%20+1]))
+  if [[ $VERBOSE = "v" ]]
+    then
+    echo -e "Resultado INI \e[1;92m$PL_NAME\e[0m: $PL_C_INI VS \e[1;91m$NPC_NAME\e[0m: $NPC_C_INI"
+    read -p "         Pulsa Enter             "
+  fi
+  read -p "         Pulsa Enter             "
+  echo ""
+  while [ $PL_C_INI -eq $NPC_C_INI ]
+    do
+      echo "Empate en las iniciativas, volviendo a calcular..."
+      echo ""
+      PL_C_INI_DICE=$[RANDOM%20+1]
+      PL_C_INI=$(($PL_C_INI_DICE + $PL_INI_MOD))
+      NPC_C_INI=$(($NPC_C_DEX_MOD + $[RANDOM%20+1]))
+      if [[ $VERBOSE = "v" ]]
+        then
+          echo -e "La tirada de Iniciativa de \e[1;92m$PL_NAME\e[0m es $PL_C_INI_DICE"
+          echo -e "El modificador de Iniciativa de \e[1;92m$PL_NAME\e[0m es $PL_INI_MOD"
+          echo -e "La iniciativa total de \e[1;92m$PL_NAME\e[0m es $PL_C_INI"
+          echo ""
+          echo -e "La iniciativa de \e[1;91m$NPC_NAME\e[0m es $NPC_C_INI"
+          echo ""
+          read -p "         Pulsa Enter             "
+          echo ""
+      fi
+    done
+  clear
+  echo "Comienza el combate"
+  if [ $PL_C_INI -gt $NPC_C_INI ]
+    then
+      COMBAT_FIRST="PL"
+      echo -e "Empieza \e[1;92m$PL_NAME\e[0m"
+      echo ""
+      read -p "         Pulsa Enter             "
+      echo ""
+  elif [ $NPC_C_INI -gt $PL_C_INI ]
+    then
+      COMBAT_FIRST="NPC"
+      echo -e "Empieza \e[1;91m$NPC_NAME\e[0m"
+      echo ""
+      read -p "         Pulsa Enter             "
+      echo ""
+    else
+      echo "Stop breaking things"
+      exit
+  fi 
+  ### Loop While Combate ###
+  while [ $NPC_C_HP -gt 0 ] && [ $PL_HP -gt 0 ] && [ $FLEE_FLAG -eq 0 ];
+    do 
+      if [ $COMBAT_FIRST = "PL" ]
+        then
+          if [ $PL_C_STATUS = "Envenenado" ]
+            then
+              PL_POISONED_STATUS
+          fi
+          if [ $COMBAT_END_FLAG -eq 0 ]
+            then
+              PL_TURN
+              COMBAT_CHECK
+          fi
+          if [ $COMBAT_END_FLAG -eq 0 ] 
+            then
+              COMBAT_SCREEN
+              NPC_TURN
+              COMBAT_CHECK
+              let "TURN+=1"
+          fi
+      elif [ $COMBAT_FIRST = "NPC" ]
+        then
+          COMBAT_SCREEN
+          NPC_TURN
+          COMBAT_CHECK
+          if [ $COMBAT_END_FLAG -eq 0 ] 
+            then
+              if [ $PL_C_STATUS = "Envenenado" ]
+                then
+                  PL_POISONED_STATUS
+              fi
+              if [ $COMBAT_END_FLAG -eq 0 ]
+                then
+                  PL_TURN
+                  COMBAT_CHECK
+                  let "TURN+=1"
+              fi
+          fi
+      else
+        echo "Fallo al establecer turno inicial"
+        exit
+      fi
+    done
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo "Combate finalizado"
+      echo "COMBAT SIMULATION V1.1"
+      echo "We check the player HP"
+  fi
+  if [ $PL_HP -gt 0 ] && [ $FINAL_BOSS -eq 0 ]
+    then
+    PL_UPGRADES
+  fi
+  if [ $PL_HP -le 0 ]
+    then
+      GAME_OVER=1
+  fi
+}
+
+function COMBAT_CHECK {
+  if [ $PL_HP -le 0 ] || [ $NPC_C_HP -le 0 ]
+    then
+    COMBAT_END_FLAG=1
+    COMBAT_SCREEN
+    if [ $PL_HP -le 0 ]
+      then
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/pl_death.wav >/dev/null 2>&1 &
+        echo -e " \e[1;92m$PL_NAME\e[0m ha sido derrotado"
+        read -p "         Pulsa Enter             "
+        GAME_OVER=1
+    elif [ $NPC_C_HP -le 0 ]
+      then
+        case $NPC_NAME in
+          "Esqueleto")
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_death_skel.wav >/dev/null 2>&1 &
+            ;;
+          "Goblin")
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_death_goblin.wav >/dev/null 2>&1 &
+            ;;
+          "Cultista")
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_death_cultist.wav >/dev/null 2>&1 &
+            ;;
+          "Armadura Animada")
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_death_armor.wav >/dev/null 2>&1 &
+            ;;
+          "Orco"|"Worg")
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_death_orc.wav >/dev/null 2>&1 &
+            ;;
+          *)
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_death.wav >/dev/null 2>&1 &
+            ;;
+        esac
+
+        echo -e "Has derrotado al \e[1;91m$NPC_NAME\e[0m"
+        PL_EXP=$(($PL_EXP + $NPC_EXP))
+        read -p "         Pulsa Enter             "
+    fi
+  fi
+}

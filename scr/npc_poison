@@ -1,0 +1,26 @@
+function NPC_POISON_CHECK {
+  PL_DICE=$(($[RANDOM%20+1] + $PL_C_CON_MOD))
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo "S_Throw:$PL_DICE vs Dificultad:$NPC_C_POISON_DC"
+  fi
+  if [ $PL_DICE -ge $NPC_C_POISON_DC ]
+    then
+      if [ $PL_C_STATUS = "Envenenado" ]
+        then
+          echo -e "\e[1;92m$PL_NAME\e[0m ya no está envenenado"
+        else
+          echo -e "\e[1;92m$PL_NAME\e[0m resiste el veneno"
+      fi
+      PL_C_STATUS="OK"
+    else
+      if [ $PL_C_STATUS = "Envenenado" ]
+        then
+          echo -e "\e[1;92m$PL_NAME\e[0m sigue envenenado"
+        else
+          echo -e "\e[1;92m$PL_NAME\e[0m está envenenado"
+      fi
+      PL_C_STATUS="Envenenado"
+  fi
+  read -p "         Pulsa Enter             "
+}

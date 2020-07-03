@@ -1,0 +1,48 @@
+# Asigna los stats del personaje a los stas de combate #
+function PL_C_STAT_ASSIGN {
+#PL_C_HP=$PL_HP
+PL_C_STR=$PL_STR
+PL_C_DEX=$PL_DEX
+PL_C_CON=$PL_CON
+PL_C_INT=$PL_INT
+PL_C_WIS=$PL_WIS
+PL_C_CHA=$PL_CHA
+PL_C_HIT=$PL_HIT
+PL_C_MOD=$PL_MOD
+PL_C_DMG_BONUS=$PL_DMG_BONUS
+PL_C_ARMOR=$PL_ARMOR
+#PL_C_AC=$(( $PL_BASE_AC + $PL_ARMOR + $PL_DEX_MOD ))
+}
+# Recalcula los modificadores de combate tras alterar un stat #
+function PL_C_STAT_REFRESH {
+  PL_C_STR_MOD=$((($PL_C_STR - 10) / 2))
+  PL_C_DEX_MOD=$((($PL_C_DEX - 10) / 2))
+  PL_C_CON_MOD=$((($PL_C_CON - 10) / 2))
+  PL_C_INT_MOD=$((($PL_C_INT - 10) / 2))
+  PL_C_WIS_MOD=$((($PL_C_WIS - 10) / 2))
+  PL_C_CHA_MOD=$((($PL_C_CHA - 10) / 2))
+  PL_C_AC=$(( $PL_BASE_AC + $PL_C_ARMOR + $PL_C_DEX_MOD ))
+  if [ $PL_CLASS = "Guerrero" ]
+    then
+      PL_C_MOD=$PL_C_STR_MOD
+  elif [ $PL_CLASS = "Picaro" ]
+    then
+      PL_C_MOD=$PL_C_DEX_MOD
+  elif [ $PL_CLASS = "Mago" ]
+    then
+      PL_C_MOD=$PL_C_INT_MOD
+  else
+    echo "Tu clase no está definida correctamente. Saliendo"
+    exit
+  fi
+### Establecer modificador a HIT DIE ###
+PL_C_HIT=$(( $PL_C_MOD + $PL_PROF ))
+### Establecer modificador de DAÑO ###
+PL_C_DMG_BONUS=$PL_C_MOD
+PL_C_SPELL_DC=$((8 + $PL_PROF + $PL_C_INT_MOD))
+PL_C_MANA_REGEN=$(($PL_C_WIS_MOD + 1))
+if [ $PL_C_MANA_REGEN -le 0 ]
+  then
+    PL_C_MANA_REGEN=1
+fi
+}

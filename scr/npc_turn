@@ -1,0 +1,108 @@
+function NPC_TURN {
+if [ $NPC_HEALER -eq 1 ] && [ $NPC_C_HEALS_USED -lt $NPC_MAX_HEALS ] && [ $NPC_C_HP -le $(($NPC_C_HP_MAX / 3)) ]
+  then
+    NPC_HEAL_SND=$[RANDOM%3+1]
+    nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_alterself_$NPC_HEAL_SND.wav >/dev/null 2>&1 &
+    echo -e "\e[1;91m$NPC_NAME\e[0m decide curarse"
+    read -p "         Pulsa Enter             "
+    let "NPC_C_HEALS_USED+=1"
+    if [[ $VERBOSE = "v" ]]; then
+      echo "Hechizos usados: $NPC_C_HEALS_USED | Hechizos máximos $NPC_MAX_HEALS"
+    fi
+    for ((NPC_HEAL_DICE_COUNT = 1 ; NPC_HEAL_DICE_COUNT <= $NPC_HEAL_DICE ; NPC_HEAL_DICE_COUNT++ ))
+      do
+        NPC_HEAL_DICE_RESULT=$[RANDOM%$NPC_HEAL_QUANT+1]
+        NPC_HEAL_TOTAL=$(($NPC_HEAL_TOTAL + $NPC_HEAL_DICE_RESULT))
+        if [[ $VERBOSE = "v" ]]
+          then
+            echo "dado número: $NPC_HEAL_DICE_COUNT"
+            echo "Resultado: $NPC_HEAL_DICE_RESULT"
+            echo "Curación acumulada: $NPC_HEAL_TOTAL"
+            echo ""
+        fi
+      done
+    echo "Cura: $NPC_HEAL_TOTAL"
+    NPC_C_HP=$(($NPC_C_HP + $NPC_HEAL_TOTAL))
+    if [ $NPC_C_HP -gt $NPC_C_HP_MAX ]
+      then
+        NPC_C_HP=$NPC_C_HP_MAX
+        #echo "Vida actual: $NPC_C_HP es mayor que Vida máxima: $NPC_C_HP_MAX"
+        echo "$NPC_C_HP/$NPC_C_HP_MAX"
+      else
+        echo "$NPC_C_HP/$NPC_C_HP_MAX"
+    fi
+    NPC_HEAL_TOTAL=0
+  elif [ $NPC_CASTER -eq 1 ] && [ $NPC_C_SPELLS_USED -lt $NPC_MAX_SPELLS ] && [ $PL_C_DEBUFF_COUNT -lt $NPC_C_DEBUFF_LIMIT ]
+    then
+      let "NPC_C_SPELLS_USED+=1"
+      echo -e "\e[1;91m$NPC_NAME\e[0m usará un hechizo"
+      PL_DICE=$(($[RANDOM%20+1] + $PL_C_WIS_MOD))
+      if [[ $VERBOSE = "v" ]]
+        then
+          echo "Hechizos usados: $NPC_C_SPELLS_USED | Hechizos máximos $NPC_MAX_SPELLS"
+          echo "STR:$PL_C_STR DEX:$PL_C_DEX INT:$PL_C_INT"
+          echo "MOD:$PL_C_STR_MOD MOD:$PL_C_DEX_MOD MOD:$PL_C_INT_MOD"
+          echo ""
+          echo "S_Throw:$PL_DICE vs Dificultad: $NPC_C_SPELL_DC"
+      fi
+      if [ $PL_DICE -lt $NPC_C_SPELL_DC ]
+        then
+          let "PL_C_DEBUFF_COUNT+=1"
+          if [ $PL_C_MOD -lt 3 ]
+            then
+              if [ $PL_C_AC -gt 14 ]
+                then
+                  NPC_REND_SND=$[RANDOM%4+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_alter_$NPC_REND_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;91m$NPC_NAME\e[0m castea: \e[1;100mRend\e[0m"
+                  echo -e "La AC \e[1;92m$PL_NAME\e[0m se reduce en 1"
+                  PL_C_ARMOR=$(($PL_C_ARMOR - 1))
+                  PL_C_STAT_REFRESH
+                else
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/spell_protection.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;91m$NPC_NAME\e[0m castea: Mage Armour"
+                  echo -e "\e[1;91m$NPC_NAME\e[0m aumenta su AC en 1"
+                  NPC_C_AC=$(($NPC_C_AC + 1))
+              fi    
+            else
+              NPC_DEBUFF_SND=$[RANDOM%4+1]
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_arcane_$NPC_DEBUFF_SND.wav >/dev/null 2>&1 &
+              if [ $PL_CLASS = "Guerrero" ]
+                then
+                  echo -e "\e[1;91m$NPC_NAME\e[0m castea: Wither"
+                  echo -e "La Fuerza de \e[1;92m$PL_NAME\e[0m se reduce en 2"
+                  PL_C_STR=$(($PL_C_STR - 2))
+              elif [ $PL_CLASS = "Picaro" ]
+                then
+                  echo -e "\e[1;91m$NPC_NAME\e[0m castea: Slow"
+                  echo -e "La Dexteridad de \e[1;92m$PL_NAME\e[0m se reduce en 2"
+                  PL_C_DEX=$(($PL_C_DEX - 2))
+              else
+                echo -e "\e[1;91m$NPC_NAME\e[0m castea: Diminish"
+                echo -e "La Inteligencia de \e[1;92m$PL_NAME\e[0m se reduce en 2"
+                  PL_C_INT=$(($PL_C_INT - 2))
+              fi
+            PL_C_STAT_REFRESH
+            echo "STR:$PL_C_STR DEX:$PL_C_DEX INT:$PL_C_INT"
+            echo "MOD:$PL_C_STR_MOD DEX:$PL_C_DEX_MOD INT:$PL_C_INT_MOD"
+          fi
+        else
+          echo "El Hechizo falla"
+      fi
+  elif [ $NPC_POISON -eq 1 ] && [ $PL_C_STATUS = "OK" ] && [ $NPC_C_POISONS_USED -lt $NPC_MAX_POISON ]
+    then
+      let "NPC_C_POISONS_USED+=1"
+      nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_poison.wav >/dev/null 2>&1 &
+      echo -e "\e[1;91m$NPC_NAME\e[0m usará veneno"
+      NPC_POISON_CHECK
+  else
+    echo -e "\e[1;91m$NPC_NAME\e[0m atacará"
+    NPC_ATTACK
+    #PL_HP=$(($PL_HP - 2))
+fi
+if [ $PL_HP -gt 0 ]
+  then
+    echo -e "Finaliza el turno de \e[1;91m$NPC_NAME\e[0m"
+    read -p "         Pulsa Enter             "
+fi
+}

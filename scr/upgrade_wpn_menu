@@ -1,0 +1,76 @@
+# Menu de mejoras de armas #
+function PL_UPGRADES_WPN {
+  PL_UPGRADE_CHOICE=""
+  PL_UPGRADE_MENU_WPN=1
+  while [ $PL_UPGRADE_MENU_WPN -eq 1 ]; do
+    PL_UPGRADES_COST_UPDATE
+    clear
+    echo "Mejora de arma. Esencia disponible: $PL_EXP"
+    echo ""
+    echo ""
+    echo -e "1) Mejorar cantidad de tiradas\t║ Coste: $PL_UPGRADE_COST_WPN_DICE_DISCOUNT\t║ (Valor actual: $PL_WPN_DICE)"
+    echo -e "2) Mejorar rango de daño\t║ Coste: $PL_UPGRADE_COST_WPN_QUANT_DISCOUNT\t║ (Valor actual: $PL_WPN_DMG)"
+    echo -e "3) Añadir +1 a hit y daño\t║ Coste: $PL_UPGRADE_COST_WPN_BONUS_DISCOUNT\t║ (Valor actual: $PL_WPN_UPGRADE_BONUS)"
+    echo ""
+    echo -e "0) Volver al menú general de mejoras"
+    echo ""
+    read -p "Elige una opción: " PL_UPGRADE_CHOICE
+    case $PL_UPGRADE_CHOICE in
+      1)
+        if [ $PL_EXP -ge $PL_UPGRADE_COST_WPN_DICE_DISCOUNT ]
+          then
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+            PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_WPN_DICE_DISCOUNT))
+            PL_WPN_DICE=$(($PL_WPN_DICE + 1))
+            echo ""
+            echo "Tu numero de tiradas ha aumentado en +1. $PL_WPN_DICE"
+            echo ""
+            read -p "         Pulsa Enter             "
+          else
+            echo ""
+            echo "No tienes suficiente esencia"
+            read -p "         Pulsa Enter             "
+        fi
+        ;;
+      2)
+        if [ $PL_EXP -ge $PL_UPGRADE_COST_WPN_QUANT_DISCOUNT ]
+          then
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+            PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_WPN_QUANT_DISCOUNT))
+            PL_WPN_DMG=$(($PL_WPN_DMG + 1))
+            echo ""
+            echo "Tu rango de daño ha aumentado en +1. $PL_WPN_DMG"
+            echo ""
+            read -p "         Pulsa Enter             "
+          else
+            echo ""
+            echo "No tienes suficiente esencia"
+            read -p "         Pulsa Enter             "
+        fi
+        ;;
+      3)
+        if [ $PL_EXP -ge $PL_UPGRADE_COST_WPN_BONUS_DISCOUNT ]
+          then
+            nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+            PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_WPN_BONUS_DISCOUNT))
+            PL_WPN_UPGRADE_BONUS=$(($PL_WPN_UPGRADE_BONUS + 1))
+            echo ""
+            echo "Tu bonus de arma ha aumentado en +1. $PL_WPN_UPGRADE_BONUS"
+            echo ""
+            read -p "         Pulsa Enter             "
+           else
+            echo ""
+            echo "No tienes suficiente esencia"
+            read -p "         Pulsa Enter             "
+        fi
+        ;;
+      0)
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+        PL_UPGRADE_MENU_WPN=0
+        ;;
+      *)
+        read -p "         Introduce un número válido             "
+        ;;
+    esac
+  done
+}

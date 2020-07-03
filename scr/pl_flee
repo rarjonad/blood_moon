@@ -1,0 +1,28 @@
+# Comprueba si el jugador logra huir del combate #
+function PL_FLEE {
+  PL_DICE=$[RANDOM%20+1]
+  NPC_DICE=$[RANDOM%20+1]
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo -e "La tirada de huida de \e[1;92m$PL_NAME\e[0m es $PL_DICE"
+      echo -e "El bonus de huida de \e[1;92m$PL_NAME\e[0m es $PL_C_DEX_MOD"
+      echo -e "El tirada de huida de \e[1;91m$NPC_NAME\e[0m es $NPC_DICE"
+      echo -e "El bonus de huida de \e[1;91m$NPC_NAME\e[0m es $NPC_C_DEX_MOD"
+  fi
+  if [ $PL_CLASS = "Picaro" ]
+    then
+      PL_C_FLEE=$(($PL_DICE + $PL_C_DEX_MOD + 4))
+    else
+      PL_C_FLEE=$(($PL_DICE + $PL_C_DEX_MOD))
+  fi
+  NPC_C_FLEE=$(($NPC_DICE + $NPC_C_DEX_MOD))
+  if [ $PL_C_FLEE -gt $NPC_C_FLEE ]
+    then
+      echo -e "\e[1;92m$PL_NAME\e[0m consigue huir"
+      COMBAT_END_FLAG=1
+      FLEE_FLAG=1
+  elif [ $PL_C_FLEE -le $NPC_C_FLEE ]
+    then
+      echo -e "\e[1;92m$PL_NAME\e[0m no consigue huir"
+  fi
+}

@@ -1,0 +1,71 @@
+function NPC_ATTACK {
+  NPC_DICE=$[RANDOM%20+1]
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo "Resultado Tirada NPC: $NPC_DICE"
+  fi
+  if [ $NPC_DICE -eq 20 ]
+    then
+      nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_hit.wav >/dev/null 2>&1 &
+      echo -e "\e[1;91m$NPC_NAME\e[0m consigue un golpe crítico"
+      read -p "         Pulsa Enter             "
+      echo ""
+      NPC_DAMAGE
+    else
+      NPC_DICE_TOTAL=$(($NPC_DICE + $NPC_HIT_BONUS))
+      if [[ $VERBOSE = "v" ]]
+        then
+          echo "Resultado Tirada Más bonus NPC: $NPC_DICE_TOTAL"
+      fi
+      if [ $NPC_DICE_TOTAL -ge $PL_C_AC ]
+        then
+          nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_hit.wav >/dev/null 2>&1 &
+          echo -e "El ataque de \e[1;91m$NPC_NAME\e[0m acierta"
+          NPC_DAMAGE
+        else
+          nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/npc/npc_miss.wav >/dev/null 2>&1 &
+          echo -e "El ataque de \e[1;91m$NPC_NAME\e[0m falla"
+      fi
+  fi
+}
+
+# Calcula el daño realizado por un NPC #
+function NPC_DAMAGE {
+  NPC_DMG_DICE=0
+  NPC_DMG_TOTAL=0
+  for ((n = 1 ; n <= $NPC_WPN_DICE ; n++ ))
+    do
+      NPC_DMG_DICE=$[RANDOM%$NPC_WPN_DMG+1]
+      NPC_DMG_TOTAL=$(($NPC_DMG_TOTAL + $NPC_DMG_DICE))
+      if [[ $VERBOSE = "v" ]]
+        then
+          echo "dado número: $n"
+          echo "Resultado: $NPC_DMG_DICE"
+          echo "Daño acumulado: $NPC_DMG_TOTAL"
+          echo ""
+      fi
+    done 
+  if [[ $VERBOSE = "v" ]]
+    then 
+      echo "Resultado dados de daño: $NPC_DMG_TOTAL"
+  fi
+  NPC_DMG_TOTAL=$(($NPC_DMG_TOTAL + $NPC_DMG_BONUS))
+  if [[ $VERBOSE = "v" ]]
+    then 
+      echo "Modificador de daño: $NPC_DMG_BONUS"
+  fi
+  if [ $NPC_DICE -eq 20 ]
+    then
+      NPC_DMG_TOTAL=$(($NPC_DMG_TOTAL * 2))
+      echo "¡Daño doble por crítico!: $NPC_DMG_TOTAL"
+    else 
+      if [[ $VERBOSE = "v" ]]
+        then 
+          echo "Daño total: $NPC_DMG_TOTAL"
+      fi
+  fi
+  echo -e "\e[1;92m$PL_NAME\e[0m sufre \e[1;91m$NPC_DMG_TOTAL\e[0m puntos de daño"
+  PL_HP=$(($PL_HP - $NPC_DMG_TOTAL))
+  read -p "         Pulsa Enter             "
+}
+# Comprueba si el jugador resiste veneno #

@@ -1,0 +1,70 @@
+# Calcula el daño del jugador #
+function PL_DAMAGE {
+  PL_DMG_DICE=0
+  PL_DMG_TOTAL=0
+  for ((d = 1 ; d <= $PL_WPN_DICE ; d++ ))
+    do
+      PL_DMG_DICE=$[RANDOM%$PL_WPN_DMG+1]
+      PL_DMG_TOTAL=$(($PL_DMG_TOTAL + $PL_DMG_DICE))
+      if [[ $VERBOSE = "v" ]]
+        then
+          echo "dado número: $d"
+          echo "Resultado: $PL_DMG_DICE"
+          echo "Daño acumulado: $PL_DMG_TOTAL"
+          echo ""
+      fi
+    done
+  if [ $PL_ATTACK_TYPE -eq 1 ]
+    then
+      PL_DMG_TOTAL=$((PL_DMG_TOTAL + PL_C_DMG_BONUS + PL_WPN_UPGRADE_BONUS))
+  elif [ $PL_ATTACK_TYPE -eq 0 ]
+    then
+      PL_DMG_TOTAL=$((PL_DMG_TOTAL + PL_C_DMG_BONUS + PL_WPN_UPGRADE_BONUS - 2))
+    else
+      PL_DMG_TOTAL=$((PL_DMG_TOTAL + PL_C_DMG_BONUS + PL_WPN_UPGRADE_BONUS + 2))
+  fi
+  PL_DAMAGE_UNDERFLOW_CHECK
+  if [[ $VERBOSE = "v" ]]
+    then
+      if [ $PL_ATTACK_TYPE -eq 0 ]
+        then
+          echo "Penalizacion -2 por ataque ligero"
+      elif [ $PL_ATTACK_TYPE -eq 2 ]
+        then
+          echo "Bonificacion +2 por ataque pesado"
+      fi
+      echo "Modificador de daño: STAT: $PL_C_DMG_BONUS | ARMA: $PL_WPN_UPGRADE_BONUS "
+      echo "Resultado daños: $PL_DMG_TOTAL"
+  fi
+  if [ $PL_DICE -eq 20 ]
+    then
+      PL_DMG_TOTAL=$((PL_DMG_TOTAL * 2))
+      echo "Daño doble por crítico: $PL_DMG_TOTAL"
+    else 
+      echo "Daño total: $PL_DMG_TOTAL"
+  fi
+  read -p "         Pulsa Enter             "
+  NPC_C_HP=$(($NPC_C_HP - $PL_DMG_TOTAL))
+  echo ""
+  # COMBAT_SCREEN
+  # if [ $NPC_C_HP -le  0 ]
+    # then
+      # COMBAT_SCREEN
+      # COMBAT_END_FLAG=1
+      # echo -e "¡Has derrotado al \e[1;91m$NPC_NAME\e[0m!"
+      # echo -e " \e[1;92m$PL_NAME\e[0m obtiene $NPC_EXP de esencia"
+      # PL_EXP=$(($PL_EXP + $NPC_EXP))
+    # else
+      # #echo -e "¡Al \e[1;91m$NPC_NAME\e[0m le quedan $NPC_C_HP puntos de vida!"#
+      # echo ""
+  # fi 
+  read -p "         Pulsa Enter             "
+}
+
+# Asigna daño a 1 si este es inferior o igual a 0 #
+function PL_DAMAGE_UNDERFLOW_CHECK {
+  if [ $PL_DMG_TOTAL -le 0 ]
+    then
+      PL_DMG_TOTAL=1
+  fi
+}

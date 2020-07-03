@@ -1,0 +1,35 @@
+# Recalcula los modificadores permanentes tras mejoras de pl_upgrade #
+function PL_MODIFIERS_REFRESH {
+  PL_STR_MOD=$((($PL_STR - 10) / 2))
+  PL_DEX_MOD=$((($PL_DEX - 10) / 2))
+  PL_CON_MOD=$((($PL_CON - 10) / 2))
+  PL_INT_MOD=$((($PL_INT - 10) / 2))
+  PL_WIS_MOD=$((($PL_WIS - 10) / 2))
+  PL_CHA_MOD=$((($PL_CHA - 10) / 2))
+   # Determinar modificador de HIT/DMG 
+  if [ $PL_CLASS = "Guerrero" ]
+    then
+      PL_MOD=$PL_STR_MOD
+  elif [ $PL_CLASS = "Picaro" ]
+    then
+      PL_MOD=$PL_DEX_MOD
+  elif [ $PL_CLASS = "Mago" ]
+    then
+      PL_MOD=$PL_INT_MOD
+  else
+    echo "Tu clase no está definida correctamente. Saliendo"
+    exit
+  fi
+  #echo "$PL_MOD porque eres un $PL_CLASS"
+  ### Establecer modificador a HIT DIE ###
+  PL_HIT=$(($PL_MOD + $PL_PROF))
+  ### Establecer modificador de DAÑO ###
+  PL_DMG_BONUS=$PL_MOD
+  ### Establecer INICIATIVA ###
+  if [ $PL_CLASS = "Picaro" ]
+    then
+      PL_INI_MOD=$(($PL_DEX_MOD + 3))
+    else
+      PL_INI_MOD=$PL_DEX_MOD
+  fi
+}

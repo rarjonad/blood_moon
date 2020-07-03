@@ -1,0 +1,133 @@
+# Obtiene un NPC aleatorio entre los introducidos en la lista #
+function NPC_FETCH {
+  if [ $FINAL_BOSS -eq 1 ]
+    then
+      RANDOM_NPC_ID=$[RANDOM%5]
+      RANDOM_NPC_SOURCE="./npc/boss"
+    else
+      RANDOM_NPC_ID=$[RANDOM%5]
+      RANDOM_NPC_SOURCE="./npc/mob"
+  fi
+  echo "Random NPC: $RANDOM_NPC_ID"
+  echo "Generando combate..."
+  NPC_NAME=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 2)
+  NPC_C_BASE_AC=10
+  NPC_HP_DICE=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 3)
+  NPC_HP_DICE_VALUE=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 4)
+  NPC_C_ARMOR=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 5)
+  NPC_C_STR=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 6)
+  NPC_C_DEX=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 7)
+  NPC_C_CON=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 8)
+  NPC_C_INT=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 9)
+  NPC_C_WIS=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 10)
+  NPC_C_CHA=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 11)
+  NPC_WPN_DICE=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 12)
+  NPC_WPN_DMG=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 13)
+  NPC_MOD_STAT=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 14)
+  NPC_PROF=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 15)
+  NPC_HEALER=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 16)
+  NPC_HEAL_DICE=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 17)
+  NPC_HEAL_QUANT=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 18)
+  NPC_CASTER=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 19)
+  NPC_C_DEBUFF_LIMIT=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 20)
+  NPC_POISON=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 21)
+  NPC_EXP=$(cat $RANDOM_NPC_SOURCE | grep ^$RANDOM_NPC_ID | cut -d , -f 22)
+  NPC_C_HP=0
+  NPC_MAX_POISON=0
+  NPC_C_POISONS_USED=0
+  NPC_C_POISON_DC=0
+  NPC_MAX_SPELLS=0
+  NPC_C_SPELLS_USED=0
+  NPC_C_SPELL_DC=0
+  NPC_MAX_HEALS=0
+  NPC_C_HEALS_USED=0
+  NPC_C_STAT_REFRESH
+  if [ $NPC_HEALER -eq 1 ]
+    then
+      NPC_MAX_HEALS=$(($NPC_C_WIS_MOD + 1 ))
+      if [ $NPC_MAX_HEALS -lt 1 ]
+        then
+          NPC_MAX_HEALS=1
+      fi
+  fi
+  if [ $NPC_CASTER -eq 1 ]
+    then
+      NPC_MAX_SPELLS=$(($NPC_C_INT_MOD + 1 ))
+      NPC_C_SPELL_DC=$(( 8 + $NPC_PROF + $NPC_C_INT_MOD))
+      if [ $NPC_MAX_SPELLS -lt 1 ]
+        then
+          NPC_MAX_SPELLS=1
+      fi
+  fi
+  if [ $NPC_POISON -eq 1 ]
+    then
+      NPC_MAX_POISON=$(($NPC_C_DEX_MOD + 1 ))
+      NPC_C_POISON_DC=$(( 8 + $NPC_PROF + $NPC_C_DEX_MOD))
+      if [ $NPC_MAX_POISON -lt 1 ]
+        then
+          NPC_MAX_POISON=1
+      fi
+  fi
+  for (( h = 1 ; h <= $NPC_HP_DICE ; h++ ))
+        do
+          NPC_C_HP_CALC=$[RANDOM%$NPC_HP_DICE_VALUE+1]
+          NPC_C_HP=$(($NPC_C_HP + $NPC_C_HP_CALC))
+          if [[ $VERBOSE = "v" ]]
+            then
+              echo "dado número $h"
+              echo "Resultado: $NPC_C_HP_CALC"
+              echo "vida acumulada: $NPC_C_HP"
+              echo ""
+          fi
+        done
+      NPC_C_HP=$(($NPC_C_HP + $NPC_C_CON_MOD))
+      if [[ $VERBOSE = "v" ]]
+        then
+        echo "Modificador vida: $NPC_C_CON_MOD"
+        echo "vida total: $NPC_C_HP"
+      fi
+      NPC_C_HP_MAX=$NPC_C_HP
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo "El NPC seleccionado es: $NPC_NAME"
+      echo "Generando vida aleatoria de NPC..."
+      echo "HP: $NPC_HP_DICE d $NPC_HP_DICE_VALUE AC: $NPC_C_ARMOR "
+      echo "$NPC_NAME | HP: $NPC_C_HP/$NPC_C_HP_MAX AC: $NPC_C_AC | EXP: $NPC_EXP"
+      echo " STAT | VALUE | MODIFIER"
+      echo "  STR |  $NPC_C_STR  | $NPC_C_STR_MOD" 
+      echo "  DEX |  $NPC_C_DEX  | $NPC_C_DEX_MOD" 
+      echo "  CON |  $NPC_C_CON  | $NPC_C_CON_MOD" 
+      echo "  INT |  $NPC_C_INT  | $NPC_C_INT_MOD" 
+      echo "  WIS |  $NPC_C_WIS  | $NPC_C_WIS_MOD" 
+      echo "  CHA |  $NPC_C_CHA  | $NPC_C_CHA_MOD" 
+      echo ""
+      echo "Daño $NPC_NAME: $NPC_WPN_DICE d $NPC_WPN_DMG"
+      echo "NPC_MOD_STAT: $NPC_MOD_STAT"
+      echo "NPC_PROF: $NPC_PROF"
+      echo "NPC_HEALER: $NPC_HEALER"
+      echo "NPC_CASTER: $NPC_CASTER"
+      echo "NPC_POISON: $NPC_POISON"
+      echo "Hit bonus: $NPC_HIT_BONUS"
+      echo "Damage bonus: $NPC_DMG_BONUS"
+      if [ $NPC_HEALER -eq 1 ]
+        then
+          echo "$NPC_NAME es healer | Máx heals: $NPC_MAX_HEALS"
+        else
+          echo "$NPC_NAME no es healer"
+      fi
+      if [ $NPC_CASTER -eq 1 ]
+        then
+          echo "$NPC_NAME es caster | Máx spells: $NPC_MAX_SPELLS | DC: $NPC_C_SPELL_DC | Limite debuffos: $NPC_C_DEBUFF_LIMIT"
+        else
+          echo "$NPC_NAME no es caster"
+      fi
+      if [ $NPC_POISON -eq 1 ]
+        then
+          echo "$NPC_NAME tiene veneno | Máx poisons: $NPC_MAX_POISON | DC: $NPC_C_POISON_DC"
+        else
+          echo "$NPC_NAME no tiene veneno"
+      fi
+      read -p "         Pulsa Enter             "
+      echo ""
+  fi
+}

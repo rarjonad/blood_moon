@@ -1,0 +1,115 @@
+# Dibuja el 'HUD' durante los combates #
+function COMBAT_SCREEN {
+  clear
+  echo -e "\e[1;92m$PL_NAME\e[0m │ AC: \e[1;100m$PL_C_AC\e[0m │ Estado: \e[1;93m$PL_C_STATUS\e[0m ║ \e[1;91m$NPC_NAME\e[0m │ HP: $NPC_C_HP/$NPC_C_HP_MAX │ AC: $NPC_C_AC"
+    if [ $(( $PL_HP )) -eq 0 ];then
+        echo -e " HP  ▌▌▌▌▌▌▌▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+      else
+        if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 10 ];then
+          echo -e " HP  \e[32m▌\e[39m▌▌▌▌▌▌▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+        else
+          if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 20 ];then
+            echo -e " HP  \e[32m▌▌\e[39m▌▌▌▌▌▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+          else
+            if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 30 ];then
+              echo -e " HP  \e[32m▌▌▌\e[39m▌▌▌▌▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+            else
+              if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 40 ];then
+                echo -e " HP  \e[32m▌▌▌▌\e[39m▌▌▌▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+              else
+                if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 50 ];then
+                  echo -e " HP  \e[32m▌▌▌▌▌\e[39m▌▌▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+                else
+                  if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 60 ];then
+                    echo -e " HP  \e[32m▌▌▌▌▌▌\e[39m▌▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+                  else
+                    if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 70 ];then
+                      echo -e " HP  \e[32m▌▌▌▌▌▌▌\e[39m▌▌▌  "$PL_HP"/"$PL_HP_MAX"."
+                    else
+                      if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 80 ];then
+                        echo -e " HP  \e[32m▌▌▌▌▌▌▌▌\e[39m▌▌  "$PL_HP"/"$PL_HP_MAX"."
+                      else
+                        if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 90 ];then
+                          echo -e " HP  \e[32m▌▌▌▌▌▌▌▌▌\e[39m▌  "$PL_HP"/"$PL_HP_MAX"."
+                        else
+                          if [ $(( $PL_HP * 100 / $PL_HP_MAX )) -le 100 ];then
+                            echo -e " HP  \e[32m▌▌▌▌▌▌▌▌▌▌\e[39m  "$PL_HP"/"$PL_HP_MAX"."
+                          else
+                            echo "[UNEXPECTED ERROR. ABOVE 100%]"
+                          fi
+                        fi
+                      fi
+                    fi
+                  fi
+                fi
+              fi
+            fi
+          fi
+        fi
+      fi
+  if [ $PL_CLASS = "Mago" ]
+    then
+      if [ $(( $PL_MANA_CURRENT )) -eq 0 ];then
+        echo -e "MANA ▌▌▌▌▌▌▌▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+      else
+        if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 10 ];then
+          echo -e "MANA \e[34m▌\e[39m▌▌▌▌▌▌▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+        else
+          if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 20 ];then
+            echo -e "MANA \e[34m▌▌\e[39m▌▌▌▌▌▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+          else
+            if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 30 ];then
+              echo -e "MANA \e[34m▌▌▌\e[39m▌▌▌▌▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+            else
+              if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 40 ];then
+                echo -e "MANA \e[34m▌▌▌▌\e[39m▌▌▌▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+              else
+                if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 50 ];then
+                  echo -e "MANA \e[34m▌▌▌▌▌\e[39m▌▌▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+                else
+                  if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 60 ];then
+                    echo -e "MANA \e[34m▌▌▌▌▌▌\e[39m▌▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+                  else
+                    if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 70 ];then
+                      echo -e "MANA \e[34m▌▌▌▌▌▌▌\e[39m▌▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+                    else
+                      if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 80 ];then
+                        echo -e "MANA \e[34m▌▌▌▌▌▌▌▌\e[39m▌▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+                      else
+                        if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 90 ];then
+                          echo -e "MANA \e[34m▌▌▌▌▌▌▌▌▌\e[39m▌  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+                        else
+                          if [ $(( $PL_MANA_CURRENT * 100 / $PL_MANA_MAX )) -le 100 ];then
+                            echo -e "MANA \e[34m▌▌▌▌▌▌▌▌▌▌\e[39m  "$PL_MANA_CURRENT"/"$PL_MANA_MAX"."
+                          else
+                            echo "[UNEXPECTED ERROR. ABOVE 100%]"
+                          fi
+                        fi
+                      fi
+                    fi
+                  fi
+                fi
+              fi
+            fi
+          fi
+        fi
+      fi
+  fi
+  if [[ $VERBOSE = "v" ]]
+    then
+     echo "Debuffs: $PL_C_DEBUFF_COUNT"
+  fi
+  # if [ $PL_CLASS = "Mago" ]
+    # then
+      # echo -e "\e[1;92m$PL_NAME\e[0m | HP: $PL_HP/$PL_HP_MAX | MP: $PL_MP/$PL_MP_MAX | AC: $PL_C_AC || \e[1;91m$NPC_NAME\e[0m | HP: $NPC_C_HP/$NPC_C_HP_MAX | AC: $NPC_C_AC"
+    # else
+      # echo -e "\e[1;92m$PL_NAME\e[0m | HP: $PL_HP/$PL_HP_MAX | AC: $PL_C_AC || \e[1;91m$NPC_NAME\e[0m | HP: $NPC_C_HP/$NPC_C_HP_MAX | AC: $NPC_C_AC"
+  # fi
+  echo "STR:$PL_C_STR($PL_C_STR_MOD) DEX:$PL_C_DEX($PL_C_DEX_MOD) CON:$PL_C_CON($PL_C_CON_MOD)"
+  echo "INT:$PL_C_INT($PL_C_INT_MOD) WIS:$PL_C_WIS($PL_C_WIS_MOD) CHA:$PL_C_CHA($PL_C_CHA_MOD)"
+  echo "Turno: $TURN"
+  if [ $NPC_C_HP -gt 0 ]
+    then
+      cat "./img/$NPC_NAME"
+  fi
+}

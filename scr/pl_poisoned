@@ -1,0 +1,18 @@
+# Si el jugador está envenenado le daña y vuelve a comprobar si consigue quitarse el veneno #
+function PL_POISONED_STATUS {
+    COMBAT_SCREEN
+    PL_POISON_DAMAGE=$[RANDOM%8+1]
+    PL_HP=$(($PL_HP - $PL_POISON_DAMAGE))
+    echo -e "\e[1;92m$PL_NAME\e[0m está envenenado y sufre \e[1;32m$PL_POISON_DAMAGE\e[0m puntos de daño"
+    read -p "         Pulsa Enter             "
+    COMBAT_SCREEN
+    if [ $PL_HP -le 0 ]
+      then
+        echo -e "\e[1;92m$PL_NAME\e[0m ha sido derrotado"
+        echo ""
+        read -p "         Pulsa Enter             "
+        COMBAT_END_FLAG=1
+      else
+        NPC_POISON_CHECK
+    fi
+}

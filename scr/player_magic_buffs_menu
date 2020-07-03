@@ -1,0 +1,163 @@
+# Menú de buffos mágicos #
+function PL_MAGIC_BUFFS {
+  PL_MAGIC_MENU_SUBMENU_OPTION=""
+  PL_MAGIC_MENU_SUBMENU=1
+    while [ $PL_MAGIC_MENU_SUBMENU -eq 1 ]
+      do
+        clear
+          echo -e "MP: \e[1;34m$PL_MANA_CURRENT/$PL_MANA_MAX\e[0m"
+          echo -e ""
+          echo -e "1) Bull Strength  │ Coste: 40 │ Aumenta tu fuerza en 2 ($PL_C_STR)"
+          echo -e "2) Cat Grace\t  │ Coste: 40 │ Aumenta tu dexteridad en 2 ($PL_C_DEX)"
+          echo -e "3) Bear Endurance │ Coste: 40 │ Aumenta tu constitucion en 2 ($PL_C_CON)"
+          echo -e "4) Fox Cunning\t  │ Coste: 40 │ Aumenta tu inteligencia en 2 ($PL_C_INT)"
+          echo -e "5) Owl Wisdom\t  │ Coste: 40 │ Aumenta tu sabiduría en 2 ($PL_C_WIS)"
+          echo -e "6) Eagle Splendor │ Coste: 40 │ Aumenta tu carisma en 2 ($PL_C_CHA)"
+          echo -e "7) \e[1;100mMage Armour\e[0m\t  │ Coste: 25 │ Aumenta tu armadura en 1 ($PL_C_ARMOR)"
+          echo -e "0) Volver al menú de hechizos"
+          echo ""
+          read -p "Escoge un hechizo: " PL_MAGIC_MENU_SUBMENU_OPTION
+          case $PL_MAGIC_MENU_SUBMENU_OPTION in
+            1)
+              if [ $PL_MANA_CURRENT -ge 40 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 40))
+                  PL_C_STR=$(($PL_C_STR + 2))
+                  PL_C_STAT_REFRESH
+                  ALTER_RNDM_SND=$[RANDOM%3+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/spell_alterself_$ALTER_RNDM_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Bull Strenght"
+                  echo -e " La fuerza de \e[1;92m$PL_NAME\e[0m aumenta en 2"
+                  read -p "         Pulsa Enter             "
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            2)
+              if [ $PL_MANA_CURRENT -ge 40 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 40))
+                  PL_C_DEX=$(($PL_C_DEX + 2))
+                  PL_C_STAT_REFRESH
+                  ALTER_RNDM_SND=$[RANDOM%3+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/spell_alterself_$ALTER_RNDM_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Cat Grace"
+                  echo -e " La dexteridad de \e[1;92m$PL_NAME\e[0m aumenta en 2"
+                  read -p "         Pulsa Enter             "
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            3)
+              if [ $PL_MANA_CURRENT -ge 40 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 40))
+                  PL_C_CON=$(($PL_C_CON + 2))
+                  PL_C_STAT_REFRESH
+                  ALTER_RNDM_SND=$[RANDOM%3+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/spell_alterself_$ALTER_RNDM_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Bear Endurance"
+                  echo -e " La constitución de \e[1;92m$PL_NAME\e[0m aumenta en 2"
+                  read -p "         Pulsa Enter             "
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            4)
+              if [ $PL_MANA_CURRENT -ge 40 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 40))
+                  PL_C_INT=$(($PL_C_INT + 2))
+                  PL_C_STAT_REFRESH
+                  ALTER_RNDM_SND=$[RANDOM%3+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/spell_alterself_$ALTER_RNDM_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Fox Cunning"
+                  echo -e " La Inteligencia de \e[1;92m$PL_NAME\e[0m aumenta en 2"
+                  read -p "         Pulsa Enter             "
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            5)
+              if [ $PL_MANA_CURRENT -ge 40 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 40))
+                  PL_C_WIS=$(($PL_C_WIS + 2))
+                  PL_C_STAT_REFRESH
+                  ALTER_RNDM_SND=$[RANDOM%3+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/spell_alterself_$ALTER_RNDM_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Owl Wisdom"
+                  echo -e " La sabiduría de \e[1;92m$PL_NAME\e[0m aumenta en 2"
+                  read -p "         Pulsa Enter             "
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            6)
+              if [ $PL_MANA_CURRENT -ge 40 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 40))
+                  PL_C_CHA=$(($PL_C_CHA + 2))
+                  PL_C_STAT_REFRESH
+                  ALTER_RNDM_SND=$[RANDOM%3+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/spell_alterself_$ALTER_RNDM_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Eagle splendor"
+                  echo -e " La carisma de \e[1;92m$PL_NAME\e[0m aumenta en 2"
+                  read -p "         Pulsa Enter             "
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            7)
+              if [ $PL_MANA_CURRENT -ge 25 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 25))
+                  PL_C_ARMOR=$(($PL_C_ARMOR + 1))
+                  PL_C_STAT_REFRESH
+                  MARM_RNDM_SND=$[RANDOM%4+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_prot_$MARM_RNDM_SND.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Mage armour"
+                  echo -e " La AC de \e[1;92m$PL_NAME\e[0m aumenta en 1"
+                  read -p "         Pulsa Enter             "
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            0)
+              PL_MAGIC_MENU_SUBMENU=0
+              ;;
+            *)
+              echo ""
+              read -p "         Escoge una opción válida             "
+              ;;
+          esac
+        done
+}

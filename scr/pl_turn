@@ -1,0 +1,99 @@
+# menu principal turno del jugador #
+function PL_TURN {
+  if [ $PL_CLASS = "Mago" ]
+    then
+      if [ $PL_MANA_CURRENT -lt $PL_MANA_MAX ]
+        then
+          COMBAT_SCREEN
+          PL_MANA_CURRENT=$(($PL_MANA_CURRENT + $PL_C_MANA_REGEN))
+          echo -e "\e[1;92m$PL_NAME\e[0m regenera $PL_C_MANA_REGEN puntos de maná"
+          read -p "         Pulsa Enter             "
+          if [ $PL_MANA_CURRENT -gt $PL_MANA_MAX ]
+            then
+              PL_MANA_CURRENT=$PL_MANA_MAX
+          fi
+      fi
+  fi
+  PL_TURN_MENU=1
+  while [ $PL_TURN_MENU -eq 1 ]
+    do
+      clear
+      COMBAT_SCREEN
+      PL_TURN_MENU_CHOICE=""
+      #El tipo de ataque por defectoe es 1, solo cambia con clase guerrero
+      PL_ATTACK_TYPE=1
+      if [ $PL_CLASS = "Guerrero" ]
+        then
+          echo "  P) Ataque Pesado (-2 HIT, +2 DMG)"
+          echo "  A) Ataque Normal"
+          echo "  L) Ataque Ligero (+2 HIT, -2 DMG)"
+        else
+          echo "  A) Atacar"
+      fi
+      if [ $FINAL_BOSS -eq 0 ]
+        then 
+          echo "  H) Huir"
+        else
+          echo -e "  \e[9mH) Huir\e[0m"
+      fi
+      if [ $PL_CLASS = "Mago" ]
+        then
+          echo "  M) Magia"
+      fi
+      echo ""
+      read -p "Escoge una acción: " PL_TURN_MENU_CHOICE
+      case $PL_TURN_MENU_CHOICE in
+        [aA])
+          PL_TURN_MENU=0
+          PL_ATTACK
+          ;;
+        [hH])
+          if [ $FINAL_BOSS -eq 0 ]
+            then
+              PL_TURN_MENU=0
+              PL_FLEE
+            else
+              echo "No hay donde huir..."
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        [mM])
+          if [ $PL_CLASS = "Mago" ]
+            then
+              PL_MAGIC
+            else
+              echo "Introduce una opción válida"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        [pP])
+          if [ $PL_CLASS = "Guerrero" ]
+            then
+              PL_TURN_MENU=0
+              PL_ATTACK_TYPE=2
+              PL_ATTACK
+            else
+              echo "Introduce una opción válida"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        [lL])
+          if [ $PL_CLASS = "Guerrero" ]
+            then
+              PL_TURN_MENU=0
+              PL_ATTACK_TYPE=0
+              PL_ATTACK
+            else
+              echo "Introduce una opción válida"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        *)
+          echo "Introduce una opción válida"
+          read -p "         Pulsa Enter             "
+          ;;
+      esac
+    done
+  echo -e "Termina el turno de \e[1;92m$PL_NAME\e[0m"
+  read -p "         Pulsa Enter             "
+}

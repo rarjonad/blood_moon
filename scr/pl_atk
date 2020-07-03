@@ -1,0 +1,53 @@
+function PL_ATTACK {
+  PL_DICE=$[RANDOM%20+1]
+  COMBAT_SCREEN
+  if [ $PL_ATTACK_TYPE -eq 0 ]
+    then
+      echo -e "\e[1;92m$PL_NAME\e[0m realiza un ataque ligero +2HIT -2DMG"
+  elif [ $PL_ATTACK_TYPE -eq 2 ]
+    then
+      echo -e "\e[1;92m$PL_NAME\e[0m realiza un ataque pesado -2HIT +2DMG"
+  fi
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo "El resultado del dado es $PL_DICE"
+      echo ""
+  fi
+  if [ $PL_DICE -eq 20 ]
+    then
+      nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/wpn/hit_$PL_WPN.wav >/dev/null 2>&1 &
+      echo "¡Un golpe crítico!"
+      read -p "         Pulsa Enter             "
+      echo ""
+      PL_DAMAGE
+    else
+      if [[ $VERBOSE = "v" ]]
+        then
+          echo -e "\e[1;92m$PL_NAME\e[0m Obtiene un $PL_DICE + $PL_HIT + $PL_WPN_UPGRADE_BONUS en su tirada a hit"
+          read -p "         Pulsa Enter             "
+      fi
+      if [ $PL_ATTACK_TYPE -eq 1 ]
+        then
+          PL_DICE_TOTAL=$(($PL_DICE + $PL_HIT + $PL_WPN_UPGRADE_BONUS))
+      elif [ $PL_ATTACK_TYPE -eq 0 ]
+        then
+          PL_DICE_TOTAL=$(($PL_DICE + $PL_HIT + $PL_WPN_UPGRADE_BONUS + 2 ))
+        else
+          PL_DICE_TOTAL=$(($PL_DICE + $PL_HIT + $PL_WPN_UPGRADE_BONUS - 2 ))
+      fi
+      echo ""
+      if [ $PL_DICE_TOTAL -ge $NPC_C_AC ]
+        then
+          #COMBAT_SCREEN
+          nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/wpn/hit_$PL_WPN.wav >/dev/null 2>&1 &
+          echo -e "¡\e[1;92m$PL_NAME\e[0m consigue dar!"
+          PL_DAMAGE
+        else
+          nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/wpn/miss_$PL_WPN.wav >/dev/null 2>&1 &
+          echo -e "El ataque de \e[1;92m$PL_NAME\e[0m falla"
+          echo ""
+          read -p "         Pulsa Enter             "
+          echo ""
+      fi
+  fi
+}

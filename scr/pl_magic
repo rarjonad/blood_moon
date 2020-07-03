@@ -1,0 +1,107 @@
+# Comprueba si el hechizo acierta o no "
+function PL_MAGIC_CHECK {
+  NPC_DICE=$(($[RANDOM%20+1] + $PL_SPELL_TARGET_STAT_MOD))
+  if [[ $VERBOSE = "v" ]]
+    then
+      echo "NPC_ST: $NPC_DICE VS PL_C_SPELL_DC: $PL_C_SPELL_DC"
+  fi
+  if [ $NPC_DICE -ge $PL_C_SPELL_DC ]
+    then
+      echo -e "\e[1;91m$NPC_NAME\e[0m resiste el hechizo"
+    else
+      PL_MAGIC_HIT=1
+  fi
+}
+# Menú de hechizos de jugador #
+function PL_MAGIC {
+PL_MAGIC_MENU=1
+  while [ $PL_MAGIC_MENU -eq 1 ]
+    do
+      clear
+      COMBAT_SCREEN
+      PL_MAGIC_MENU_CHOICE=""
+      PL_MAGIC_HIT=0
+      echo -e "  1) \e[1;101mFireball\e[0m │ Coste: 65 │ 8d8 de daño. 1/2 daño con DEX save" 
+      echo -e "  2) \e[1;100mRend\e[0m     │ Coste: 40 │ Reduce en 1 la AC del enemigo"
+      echo -e "  3) Hechizos Curativos │ Hechizos de curación y estado"
+      echo -e "  4) Buffos Personales    │ Mejora tus stats o tu AC"
+      echo -e "  0) Volver al menú de acción"
+      echo ""
+      read -p "Escoge una acción: " PL_MAGIC_MENU_CHOICE
+      case $PL_MAGIC_MENU_CHOICE in
+        1)
+          if [ $PL_MANA_CURRENT -ge 65 ]
+            then
+              PL_MAGIC_MENU=0
+              PL_TURN_MENU=0
+              PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 65))
+              PL_SPELL_TARGET_STAT_MOD=$NPC_C_DEX_MOD
+              FB_RNDM_SND=$[RANDOM%4+1]
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_fire_$FB_RNDM_SND.wav >/dev/null 2>&1 &
+              echo -e "\e[1;92m$PL_NAME\e[0m castea \e[1;101mFireball\e[0m"
+              PL_MAGIC_CHECK
+              PL_SPELL_DMG_TOTAL=0
+              for ((fball = 1 ; fball <= 8 ; fball++ ))
+                do
+                  PL_SPELL_DMG_DICE=$[RANDOM%8+1]
+                  PL_SPELL_DMG_TOTAL=$(($PL_SPELL_DMG_TOTAL + $PL_SPELL_DMG_DICE))
+                  if [[ $VERBOSE = "v" ]]
+                    then
+                      echo "dado número: $fball"
+                      echo "Resultado: $PL_SPELL_DMG_DICE"
+                      echo "Daño acumulado: $PL_SPELL_DMG_TOTAL"
+                      echo ""
+                  fi
+                done          
+              if [ $PL_MAGIC_HIT -eq 1 ]
+                then
+                  NPC_C_HP=$(($NPC_C_HP - $PL_SPELL_DMG_TOTAL))
+                else
+                  PL_SPELL_DMG_TOTAL=$(($PL_SPELL_DMG_TOTAL / 2))
+                  NPC_C_HP=$(($NPC_C_HP - $PL_SPELL_DMG_TOTAL))
+              fi
+              echo -e "\e[1;91m$NPC_NAME\e[0m sufre \e[1;91m$PL_SPELL_DMG_TOTAL\e[0m puntos de daño"
+              read -p "         Pulsa Enter             "
+            else
+              echo -e "\e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        2)
+          if [ $PL_MANA_CURRENT -ge 40 ]
+            then
+              PL_MAGIC_MENU=0
+              PL_TURN_MENU=0
+              PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 40))
+              PL_SPELL_TARGET_STAT_MOD=$NPC_C_WIS_MOD
+              echo -e "\e[1;92m$PL_NAME\e[0m castea \e[1;100mRend\e[0m"
+              read -p "         Pulsa Enter             "
+              PL_MAGIC_CHECK
+              if [ $PL_MAGIC_HIT -eq 1 ]
+                then
+                  PL_REND_SND=$[RANDOM%4+1]
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_alter_$PL_REND_SND.wav >/dev/null 2>&1 &
+                  NPC_C_AC=$((NPC_C_AC - 1))
+                  echo -e "La AC de \e[1;91m$NPC_NAME\e[0m se reduce en 1"
+              fi
+            else
+              echo -e "\e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        3)
+          PL_MAGIC_HEALS
+          ;;
+        4)
+          PL_MAGIC_BUFFS
+          ;;
+        0)
+          PL_MAGIC_MENU=0
+          ;;
+        *)
+          echo ""
+          read -p "         Escoge una opción válida             "
+          ;;
+      esac
+    done
+}

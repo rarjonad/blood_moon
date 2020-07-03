@@ -1,0 +1,101 @@
+function PL_MAGIC_HEALS {
+  PL_MAGIC_MENU_SUBMENU_OPTION=""
+  PL_MAGIC_MENU_SUBMENU=1
+    while [ $PL_MAGIC_MENU_SUBMENU -eq 1 ]
+      do
+        clear
+          echo -e "HP: \e[32m$PL_HP/$PL_HP_MAX\e[0m │ MP: \e[1;34m$PL_MANA_CURRENT/$PL_MANA_MAX\e[0m │ Estado: \e[1;93m$PL_C_STATUS\e[0m"
+          echo -e "1) \e[1;90;103mHeal\e[0m\t\t │ Coste: 20 │ Te cura 10 puntos de daño"
+          echo -e "2) \e[1;90;103mHeal+\e[0m\t │ Coste: 45 │ Te cura 25 puntos de daño"
+          echo -e "3) \e[1;90;103mHeal++\e[0m\t │ Coste: 80 │ Te cura 50 puntos de daño"
+          echo -e "4) Cleanse\t │ Coste: 30 │ Elimina el veneno"
+          echo -e "0) Vover al menú de hechizos"
+          echo ""
+          read -p "Escoge un hechizo: " PL_MAGIC_MENU_SUBMENU_OPTION
+          case $PL_MAGIC_MENU_SUBMENU_OPTION in
+            1)
+              if [ $PL_MANA_CURRENT -ge 20 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 20))
+                  PL_HP=$(($PL_HP + 10 ))
+                  PL_HP_OVERFLOW_CHECK
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_heal_1.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Heal"
+                  echo -e "\e[1;92m$PL_NAME\e[0m se cura 10 puntos de vida"
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            2)
+              if [ $PL_MANA_CURRENT -ge 45 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 45))
+                  PL_HP=$(($PL_HP + 25 ))
+                  PL_HP_OVERFLOW_CHECK
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_heal_2.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Heal+"
+                  echo -e "\e[1;92m$PL_NAME\e[0m se cura 25 puntos de vida"
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            3)
+              if [ $PL_MANA_CURRENT -ge 80 ]
+                then
+                  PL_TURN_MENU=0
+                  PL_MAGIC_MENU=0
+                  PL_MAGIC_MENU_SUBMENU=0
+                  PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 80))
+                  PL_HP=$(($PL_HP + 50 ))
+                  PL_HP_OVERFLOW_CHECK
+                  nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/spell/cast_heal_4.wav >/dev/null 2>&1 &
+                  echo -e "\e[1;92m$PL_NAME\e[0m castea Heal++"
+                  echo -e "\e[1;92m$PL_NAME\e[0m se cura 50 puntos de vida"
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            4)
+              if [ $PL_MANA_CURRENT -ge 30 ]
+                then
+                  if [ $PL_C_STATUS = "Envenenado" ]
+                    then
+                      PL_TURN_MENU=0
+                      PL_MAGIC_MENU=0
+                      PL_MAGIC_MENU_SUBMENU=0
+                      PL_MANA_CURRENT=$(($PL_MANA_CURRENT - 30))
+                      PL_C_STATUS="OK"
+                      echo -e "\e[1;92m$PL_NAME\e[0m castea Cleanse "
+                    else
+                      echo -e "\e[1;92m$PL_NAME\e[0m no está envenenado"
+                      read -p "         Pulsa Enter             "
+                  fi
+                else
+                  echo -e " \e[1;92m$PL_NAME\e[0m no tiene maná suficiente"
+                  read -p "         Pulsa Enter             "
+              fi
+              ;;
+            0)
+              PL_MAGIC_MENU_SUBMENU=0
+              ;;
+            *)
+              ;;
+          esac
+        done
+}
+
+# Comprueba si la vida del jugador supera 100% y la pone al máximo si eso ocurre #
+function PL_HP_OVERFLOW_CHECK {
+  if [ $PL_HP -gt $PL_HP_MAX ]
+    then PL_HP=$PL_HP_MAX
+  fi
+}

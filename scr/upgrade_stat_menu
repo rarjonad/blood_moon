@@ -1,0 +1,133 @@
+# Menú de mejoras de los stats #
+function PL_UPGRADES_STATS {
+  PL_UPGRADE_CHOICE=""
+  PL_UPGRADE_MENU_STAT=1
+    while [ $PL_UPGRADE_MENU_STAT -eq 1 ]; do
+      PL_UPGRADES_COST_UPDATE
+      clear
+      echo "Mejora de atributos. Esencia disponible: $PL_EXP"
+      echo ""
+      echo ""
+      echo -e "1) Mejorar Fuerza       ║ Coste: $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ║ Valor Actual: $PL_STR\t│ $PL_STR_MOD"
+      echo -e "2) Mejorar Dexteridad   ║ Coste: $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ║ Valor Actual: $PL_DEX\t│ $PL_DEX_MOD"
+      echo -e "3) Mejorar Constitución ║ Coste: $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ║ Valor Actual: $PL_CON\t│ $PL_CON_MOD"
+      echo -e "4) Mejorar Inteligencia ║ Coste: $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ║ Valor Actual: $PL_INT\t│ $PL_INT_MOD"
+      echo -e "5) Mejorar Sabiduría    ║ Coste: $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ║ Valor Actual: $PL_WIS\t│ $PL_WIS_MOD"
+      echo -e "6) Mejorar Carisma      ║ Coste: $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ║ Valor Actual: $PL_CHA\t│ $PL_CHA_MOD"
+      echo ""
+      echo "0) Volver al menu general de mejoras"
+      echo ""
+      read -p "Elige una opción: " PL_UPGRADE_CHOICE
+      case $PL_UPGRADE_CHOICE in
+        1)
+          if [ $PL_EXP -ge $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ]
+            then
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+              PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_ANY_STAT_DISCOUNT))
+              PL_STR=$((PL_STR + 2))
+              PL_MODIFIERS_REFRESH
+              echo ""
+              echo "Tu fuerza ha aumentado en +2. $PL_STR"
+              echo ""
+              read -p "         Pulsa Enter             "
+            else
+              echo ""
+              echo "No tienes suficiente esencia"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        2)
+          if [ $PL_EXP -ge $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ]
+            then
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+              PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_ANY_STAT_DISCOUNT))
+              PL_DEX=$((PL_DEX + 2))
+              PL_MODIFIERS_REFRESH
+              echo ""
+              echo "Tu dexteridad ha aumentado en +2. $PL_DEX"
+              echo ""
+              read -p "         Pulsa Enter             "
+            else
+              echo ""
+              echo "No tienes suficiente esencia"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        3)
+          if [ $PL_EXP -ge $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ]
+            then
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+              PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_ANY_STAT_DISCOUNT))
+              PL_CON=$((PL_CON + 2))
+              PL_MODIFIERS_REFRESH
+              echo ""
+              echo "Tu constitución ha aumentado en +2. $PL_CON"
+              echo ""
+              read -p "         Pulsa Enter             "
+            else
+              echo ""
+              echo "No tienes suficiente esencia"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        4)
+          if [ $PL_EXP -ge $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ]
+            then
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+              PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_ANY_STAT_DISCOUNT))
+              PL_INT=$((PL_INT + 2))
+              PL_MODIFIERS_REFRESH
+              echo ""
+              echo "Tu inteligencia ha aumentado en +2. $PL_INT"
+              echo ""
+              read -p "         Pulsa Enter             "
+          else
+              echo ""
+              echo "No tienes suficiente esencia"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        5)
+          if [ $PL_EXP -ge $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ]
+            then
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+              PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_ANY_STAT_DISCOUNT))
+              PL_WIS=$((PL_WIS + 2))
+              PL_MODIFIERS_REFRESH
+              echo ""
+              echo "Tu sabiduría ha aumentado en +2. $PL_WIS"
+              echo ""
+              read -p "         Pulsa Enter             "
+            else
+              echo ""
+              echo "No tienes suficiente esencia"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        6)
+          if [ $PL_EXP -ge $PL_UPGRADE_COST_ANY_STAT_DISCOUNT ]
+            then
+              nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/upgrade/upgrade_generic.wav >/dev/null 2>&1 &
+              PL_EXP=$(($PL_EXP - $PL_UPGRADE_COST_ANY_STAT_DISCOUNT))
+              PL_CHA=$((PL_CHA + 2))
+              PL_MODIFIERS_REFRESH
+              echo ""
+              echo "Tu carisma ha aumentado en +2. $PL_CHA"
+              echo ""
+              read -p "         Pulsa Enter             "
+            else
+              echo ""
+              echo "No tienes suficiente esencia"
+              read -p "         Pulsa Enter             "
+          fi
+          ;;
+        0)
+          nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+          PL_UPGRADE_MENU_STAT=0
+          ;;
+        *)
+          read -p "         Introduce un numero válido             "
+          ;;
+      esac
+    done
+}

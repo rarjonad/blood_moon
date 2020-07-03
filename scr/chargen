@@ -1,0 +1,336 @@
+## Chargen ##
+function CHARGEN_NAME {
+	clear
+	VAR=0
+	while [ "$VAR" -ne 1 ]; do
+		clear
+		echo ""
+		echo "Elige el nombre de su personaje"
+		echo ""
+		read -p 'NOMBRE: ' PL_NAME
+		clear
+		echo ""
+		echo -e "El nombre de su personaje es [ \e[1;92m"$PL_NAME"\e[0m ]."
+		echo ""
+		echo "¿Estás de acuerdo? Pulsa [S] para continuar o cualquier otra tecla para introducirlo de nuevo."
+		echo ""
+		read -p '> ' VAR
+		if [ "$VAR" = "S" ] || [ "$VAR" = "s" ]; then
+			VAR=1
+		nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_confirm.wav >/dev/null 2>&1 &
+		else
+			VAR=0
+		fi
+	done
+}
+
+function CHARGEN_RACE {
+	clear
+	VAR=0
+	while [ "$VAR" -ne 1 ]; do
+		clear
+		echo
+		echo -e "Elige una raza para \e[1;92m$PL_NAME\e[0m."
+		echo
+		echo -e "╔══════════════════════════════════════════════════════════════════════════╗"
+		echo -e "║     ║    HUMANO    ║     ELFO     ║     ENANO    ║                       ║"
+		echo -e "║══════════════════════════════════════════════════════════════════════════║"
+		echo -e "║ STR │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ ▄▄▄ ▄▄▄ \e[39m │ Fuerza                ║"
+		echo -e "║ DEX │ \e[92m▄▄▄ ▄▄▄ ▄▄▄ \e[39m │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ Dexteridad            ║"
+		echo -e "║ CON │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ ▄▄▄ ▄▄▄ \e[39m │ Constitución          ║"
+		echo -e "║ INT │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ ▄▄▄ ▄▄▄ \e[39m │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ Inteligencia          ║"
+		echo -e "║ WIS │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ ▄▄▄ ▄▄▄ \e[39m │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ Wisdom                ║"
+		echo -e "║ CHA │ \e[92m▄▄▄ ▄▄▄ ▄▄▄ \e[39m │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ \e[92m▄▄▄ \e[39m▄▄▄ ▄▄▄  │ Carisma               ║"
+		echo -e "╚══════════════════════════════════════════════════════════════════════════╝"
+		echo
+		echo "   1 ) Humano"
+		echo "   2 ) Elfo"
+		echo "   3 ) Enano"
+		echo
+		read -p 'Raza: ' PL_RACE
+		clear
+		echo
+		if [ "$PL_RACE" = "1" ]; then
+		nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+			echo -e "La raza elegida para $PL_NAME es [ \e[1;96mHUMANO\e[0m ]."
+			PL_RACE="Humano"
+			STR_RACE_MOD=0
+			DEX_RACE_MOD=2
+			CON_RACE_MOD=0
+			INT_RACE_MOD=0
+			WIS_RACE_MOD=0
+			CHA_RACE_MOD=2
+		fi
+		if [ "$PL_RACE" = "2" ]; then
+		nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+			echo -e "La raza elegida para $PL_NAME es [ \e[1;96mELFO\e[0m ]."
+			PL_RACE="Elfo"
+			STR_RACE_MOD=0
+			DEX_RACE_MOD=0
+			CON_RACE_MOD=0
+			INT_RACE_MOD=2
+			WIS_RACE_MOD=2
+			CHA_RACE_MOD=0
+		fi
+		if [ "$PL_RACE" = "3" ]; then
+		nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+			echo -e "La raza elegida para $PL_NAME es [ \e[1;96mENANO\e[0m ]."
+			PL_RACE="Enano"
+			STR_RACE_MOD=2
+			DEX_RACE_MOD=0
+			CON_RACE_MOD=2
+			INT_RACE_MOD=0
+			WIS_RACE_MOD=0
+			CHA_RACE_MOD=0
+		fi
+		if [ "$PL_RACE" != "Humano" ]; then
+			if [ "$PL_RACE" != "Elfo" ]; then
+				if [ "$PL_RACE" != "Enano" ]; then
+					echo
+					echo "Escoge, por favor, una raza de las indicadas:  [1] [2] [3]"
+					echo
+					read -p "Pulsa una tecla para volver a intentarlo..." PAUSE
+					VAR=0
+				else
+					VAR=1
+				fi
+			else
+				VAR=1
+			fi
+		else
+			VAR=1
+		fi
+		if [ "$VAR" = 1 ]; then
+			# RAZA ELEGIDA CORRECTAMENTE
+			echo
+			echo "¿Estás de acuerdo? Pulse [S] para continuar o cualquier otra tecla para introducirlo de nuevo."
+			echo
+			read -p '> ' VAR
+			if [ "$VAR" = "S" ] || [ "$VAR" = "s" ]; then
+		nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_confirm.wav >/dev/null 2>&1 &
+				VAR=1
+			else
+				VAR=0
+			fi
+		else
+			# VOLVER A INTRODUCIR RAZA
+			echo
+		fi
+	done
+}
+
+function CHARGEN_CLASS {
+clear
+VAR=0
+while [ "$VAR" -ne 1 ]; do
+	clear
+	echo
+	echo -e "Elige una clase para \e[1;92m$PL_NAME\e[0m."
+	echo
+	echo -e "╔══════════════════════════════════════════════════════════════════════════╗"
+	echo -e "║     ║   GUERRERO   ║    PÍCARO    ║     MAGO     ║                       ║"
+	echo -e "║══════════════════════════════════════════════════════════════════════════║"
+	echo -e "║ WPN │   MARTILLO   │     DAGA     │     MAGIA    │  ARMA DEL PERSONAJE   ║"
+	echo -e "║ DICE│ \e[92m▌\e[39m▌▌▌▌▌▌▌▌▌▌▌ │ \e[92m▌▌▌\e[39m▌▌▌▌▌▌▌▌▌ │ \e[92m▌▌\e[39m▌▌▌▌▌▌▌▌▌▌ │   GOLPES DEL ARMA     ║"
+	echo -e "║┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄║"
+	echo -e "║ WPN │              │              │              │                       ║"
+	echo -e "║ DMG │ \e[92m▌▌▌▌▌▌▌▌▌▌▌▌\e[39m │ \e[92m▌▌▌▌\e[39m▌▌▌▌▌▌▌▌ │ \e[92m▌▌▌▌▌▌\e[39m▌▌▌▌▌▌ │    DAÑO DEL ARMA      ║"
+	echo -e "╚══════════════════════════════════════════════════════════════════════════╝"
+	echo
+	echo "   1 ) Guerrero"
+	echo "   2 ) Pícaro"
+	echo "   3 ) Mago"
+	echo
+	read -p 'Clase: ' PL_CLASS
+	clear
+	echo
+	if [ "$PL_CLASS" = "1" ]; then
+    nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+		echo -e "La clase elegida es [ \e[1;96mGUERRERO\e[0m ]."
+		PL_CLASS="Guerrero"
+		PL_WPN="mace"
+    PL_HP_DICE=12
+    PL_ARMOR=5
+    PL_WPN_DICE=1
+    PL_WPN_DMG=12
+		fi
+	if [ "$PL_CLASS" = "2" ]; then
+    nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+		echo -e "La clase elegida es [ \e[1;96mPÍCARO\e[0m ]."
+		PL_CLASS="Picaro"
+		PL_WPN="dagger"
+    PL_HP_DICE=8
+    PL_ARMOR=3
+    PL_WPN_DICE=3
+    PL_WPN_DMG=4
+	fi
+	if [ "$PL_CLASS" = "3" ]; then
+    nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_optionSelected.wav >/dev/null 2>&1 &
+		echo -e "La clase elegida es [ \e[1;96mMAGO\e[0m ]."
+    PL_CLASS="Mago"
+		PL_WPN="magic"
+    PL_HP_DICE=6
+    PL_ARMOR=0
+    PL_WPN_DICE=2
+    PL_WPN_DMG=6
+    PL_MANA_CURRENT=100
+    PL_MANA_MAX=100
+	fi
+	if [ "$PL_CLASS" != "Guerrero" ]; then
+		if [ "$PL_CLASS" != "Picaro" ]; then
+			if [ "$PL_CLASS" != "Mago" ]; then
+				echo
+				echo "Escoge, por favor, una clase de las indicadas:  [1] [2] [3]"
+				echo
+				read -p "Pulsa una tecla para volver a intentarlo..." PAUSE
+				VAR=0
+			else
+				VAR=1
+			fi
+		else
+			VAR=1
+		fi
+	else
+		VAR=1
+	fi
+	if [ "$VAR" = 1 ]; then
+		# CLASE ELEGIDA CORRECTAMENTE
+		echo
+		echo "¿Estás de acuerdo? Pulse [S] para continuar o cualquier otra tecla para introducirlo de nuevo."
+		echo
+		read -p '> ' VAR
+		if [ "$VAR" = "S" ] || [ "$VAR" = "s" ]; then
+      nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_confirm.wav >/dev/null 2>&1 &
+			VAR=1
+		else
+			VAR=0
+		fi
+	else
+		# VOLVER A INTRODUCIR CLASE
+		echo
+	fi
+done
+}
+
+function CHARGEN_STATS {
+STAT_GENERATION=1
+while [ $STAT_GENERATION -eq 1 ]
+  do
+    clear
+    for i in {0..3}; do
+      STAT_GEN0[i]=$[RANDOM%6+1]
+    done
+    for i in {0..3}; do
+      STAT_GEN1[i]=$[RANDOM%6+1]
+    done
+    for i in {0..3}; do
+      STAT_GEN2[i]=$[RANDOM%6+1]
+    done
+    for i in {0..3}; do
+      STAT_GEN3[i]=$[RANDOM%6+1]
+    done
+    for i in {0..3}; do
+      STAT_GEN4[i]=$[RANDOM%6+1]
+    done
+    for i in {0..3}; do
+      STAT_GEN5[i]=$[RANDOM%6+1]
+    done
+    STAT_GEN0_SORTED=($(echo ${STAT_GEN0[@]} | tr " " "\n" | sort -n))
+    STAT_GEN1_SORTED=($(echo ${STAT_GEN1[@]} | tr " " "\n" | sort -n))
+    STAT_GEN2_SORTED=($(echo ${STAT_GEN2[@]} | tr " " "\n" | sort -n))
+    STAT_GEN3_SORTED=($(echo ${STAT_GEN3[@]} | tr " " "\n" | sort -n))
+    STAT_GEN4_SORTED=($(echo ${STAT_GEN4[@]} | tr " " "\n" | sort -n))
+    STAT_GEN5_SORTED=($(echo ${STAT_GEN5[@]} | tr " " "\n" | sort -n))
+    STAT_GEN_STR=$((${STAT_GEN0_SORTED[1]} + ${STAT_GEN0_SORTED[2]} + ${STAT_GEN0_SORTED[3]} ))
+    STAT_GEN_DEX=$((${STAT_GEN1_SORTED[1]} + ${STAT_GEN1_SORTED[2]} + ${STAT_GEN1_SORTED[3]} ))
+    STAT_GEN_CON=$((${STAT_GEN2_SORTED[1]} + ${STAT_GEN2_SORTED[2]} + ${STAT_GEN2_SORTED[3]} ))
+    STAT_GEN_INT=$((${STAT_GEN3_SORTED[1]} + ${STAT_GEN3_SORTED[2]} + ${STAT_GEN3_SORTED[3]} ))
+    STAT_GEN_WIS=$((${STAT_GEN4_SORTED[1]} + ${STAT_GEN4_SORTED[2]} + ${STAT_GEN4_SORTED[3]} ))
+    STAT_GEN_CHA=$((${STAT_GEN5_SORTED[1]} + ${STAT_GEN5_SORTED[2]} + ${STAT_GEN5_SORTED[3]} ))
+    echo ""
+    echo "Generando atributos aleatorios..."
+    echo ""
+    if [[ $VERBOSE = "v" ]]
+      then
+        echo "       Dice  │  Sorted │ Result"
+        echo "STR: ${STAT_GEN0[@]} │ ${STAT_GEN0_SORTED[@]} │  $STAT_GEN_STR"
+        echo "DEX: ${STAT_GEN1[@]} │ ${STAT_GEN1_SORTED[@]} │  $STAT_GEN_DEX"
+        echo "CON: ${STAT_GEN2[@]} │ ${STAT_GEN2_SORTED[@]} │  $STAT_GEN_CON"
+        echo "INT: ${STAT_GEN3[@]} │ ${STAT_GEN3_SORTED[@]} │  $STAT_GEN_INT"
+        echo "WIS: ${STAT_GEN4[@]} │ ${STAT_GEN4_SORTED[@]} │  $STAT_GEN_WIS"
+        echo "CHA: ${STAT_GEN5[@]} │ ${STAT_GEN5_SORTED[@]} │  $STAT_GEN_CHA"
+        echo "Resultado total:"
+        echo ""
+    fi
+    echo -e "\tFuerza    \t$STAT_GEN_STR \t│Bonus por raza: $STR_RACE_MOD"
+    echo -e "\tDexteridad \t$STAT_GEN_DEX \t│Bonus por raza: $DEX_RACE_MOD"
+    echo -e "\tConstitución \t$STAT_GEN_CON \t│Bonus por raza: $CON_RACE_MOD"
+    echo -e "\tInteligencia \t$STAT_GEN_INT \t│Bonus por raza: $INT_RACE_MOD"
+    echo -e "\tSabiduría \t$STAT_GEN_WIS \t│Bonus por raza: $WIS_RACE_MOD"
+    echo -e "\tCarisma \t$STAT_GEN_CHA \t│Bonus por raza: $CHA_RACE_MOD"
+    echo ""
+    echo "¿Estás conforme con los resultados? [S] para aceptar, cualquier otra letra para recalcular"
+    read -p "> " STAT_CONFIRM
+    if [ "$STAT_CONFIRM" = "s" ] || [ "$STAT_CONFIRM" = "S" ]
+      then
+        nohup aplay -q -t WAV -f S16_LE -R 44100 ./snd/fx/menu_confirm.wav >/dev/null 2>&1 &
+        STAT_GENERATION=0
+    fi
+  done
+#### Establecer estadisticas finales ###
+PL_BASE_AC=10
+PL_STR=$(($STAT_GEN_STR + $STR_RACE_MOD))
+PL_DEX=$(($STAT_GEN_DEX + $DEX_RACE_MOD))
+PL_CON=$(($STAT_GEN_CON + $CON_RACE_MOD))
+PL_INT=$(($STAT_GEN_INT + $INT_RACE_MOD))
+PL_WIS=$(($STAT_GEN_WIS + $WIS_RACE_MOD))
+PL_CHA=$(($STAT_GEN_CHA + $CHA_RACE_MOD))
+PL_PROF=$((($PL_LVL / 4) + 2 ))
+PL_MODIFIERS_REFRESH
+PL_HP_MAX=$((($PL_HP_DICE + $PL_CON_MOD) * $PL_LVL))
+PL_HP=$PL_HP_MAX
+PL_WPN_UPGRADE_BONUS=0
+PL_EXP=0
+PL_C_STATUS="OK"
+}
+
+function CHARGEN_FINISH {
+	### Muestra stats y modificadores ###
+        clear
+        echo -e "Estas son las estadísticas finales para \e[1;92m$PL_NAME\e[0m"
+        echo -e "╔════════════════════╗"
+        echo -e "║NIVEL ║PROFICIENCIA ║"
+        echo -e "║════════════════════║"
+        echo -e "║  $PL_LVL   ║     +$PL_PROF\t     ║"
+        echo -e "╚════════════════════╝"
+        echo ""
+        echo -e "╔═══════════════════════════════════╗"
+        echo -e "║Vida: \e[1;32m$PL_HP/$PL_HP_MAX\e[0m ║ Armadura: $PL_ARMOR ║ AC: \e[1;100m$PL_C_AC\e[0m ║"
+        if [ $PL_CLASS = "Mago" ]
+          then
+            echo -e "║═══════════════════════════════════║"
+            echo -e "║Maná: \e[1;34m$PL_MANA_CURRENT/$PL_MANA_MAX\e[0m Regeneración: \e[1;36m$PL_C_MANA_REGEN\e[0m\t    ║"
+            echo -e "║Spell DC: \e[1;36m$PL_C_SPELL_DC\e[0m\t\t\t    ║"
+            echo -e "╚═══════════════════════════════════╝"
+            echo ""
+          else
+            echo -e "╚═══════════════════════════════════╝"
+        fi
+        echo -e "╔════════════════════════╗"
+        echo -e "║ \tSTATS\t║  MOD   ║"
+        echo -e "║════════════════════════║"
+        echo -e "║STR:\t $PL_STR \t║  $PL_STR_MOD\t ║"
+        echo -e "║DEX:\t $PL_DEX \t║  $PL_DEX_MOD\t ║"
+        echo -e "║CON:\t $PL_CON \t║  $PL_CON_MOD\t ║"
+        echo -e "║INT:\t $PL_INT \t║  $PL_INT_MOD\t ║"
+        echo -e "║WIS:\t $PL_WIS \t║  $PL_WIS_MOD\t ║"
+        echo -e "║CHA:\t $PL_CHA \t║  $PL_CHA_MOD\t ║"
+        echo -e "╚════════════════════════╝"
+        echo ""
+        ################ CHARGEN ENDING #########################
+        echo "HIT MOD │ DMG MOD │ INITIATIVE"
+        echo "   $PL_HIT    │    $PL_DMG_BONUS    │     $PL_INI_MOD "
+        echo ""
+        read -p "         Pulsa Enter             "
+        echo ""
+}
